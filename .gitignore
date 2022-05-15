@@ -34,3 +34,6 @@
 # CMake build
 build/*
 !build/.gitkeep
+
+# vscode
+.vscode/
