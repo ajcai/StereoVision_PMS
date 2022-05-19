@@ -1,14 +1,32 @@
 #pragma once
 #include <vector>
 
-#include "pms_types.h"
+#include "Utils/pms_types.h"
 
 class PatchMatchStereo {
  public:
   PatchMatchStereo();
   ~PatchMatchStereo();
+
+ public:
+  /**
+   * @brief 类的初始化，完成内存预分配、参数预设
+   *
+   * @param width 输入，图像宽
+   * @param height 输入，图像高
+   * @param option 输入，算法参数
+   * @return true
+   * @return false
+   */
   bool Initialize(const sint32& width, const sint32& height,
                   const PMSOption& option);
+
+  bool Match(const uint8* img_left, const uint8* img_right, float32* disp_left);
+
+ private:
+  void RandomInitialization() const;
+  /** @brief 内存释放 */
+  void Release();
 
  public:
   int width;

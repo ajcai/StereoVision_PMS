@@ -49,7 +49,7 @@ struct PMSOption {
 
   bool is_fill_holes;  // 是否填充视差空洞
 
-  bool is_fource_fpw;    // 是否强制为Frontal-Parallel Window
+  bool is_force_fpw;     // 是否强制为Frontal-Parallel Window
   bool is_integer_disp;  // 是否为整像素视差
 
   PMSOption()
@@ -64,7 +64,7 @@ struct PMSOption {
         is_check_lr(false),
         lrcheck_thres(0),
         is_fill_holes(false),
-        is_fource_fpw(false),
+        is_force_fpw(false),
         is_integer_disp(false) {}
 };
 
