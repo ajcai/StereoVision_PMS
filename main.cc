@@ -1,8 +1,8 @@
-#include <bits/stdc++.h>
-
+#include <iostream>
 #include <opencv2/opencv.hpp>
 
 #include "PatchMatchStereo/patch_match_stereo.h"
+#include "Utils/visualization.h"
 
 int main(int argv, char** argc) {
   std::string path_left = argc[1];
@@ -35,4 +35,8 @@ int main(int argv, char** argc) {
     std::cout << "匹配失败" << std::endl;
     return -2;
   }
+  cv::Mat vis_gray, vis_color;
+  Utils::VisualizeDisparityMap(disparity, width, height, vis_gray, vis_color);
+  cv::imwrite("./disp_gray.jpg", vis_gray);
+  cv::imwrite("./disp_color.jpg", vis_color);
 }

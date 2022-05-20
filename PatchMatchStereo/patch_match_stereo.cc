@@ -1,6 +1,6 @@
 #include "PatchMatchStereo/patch_match_stereo.h"
 
-#include <ctime>
+#include <iostream>
 #include <random>
 
 PatchMatchStereo::PatchMatchStereo()
@@ -33,6 +33,12 @@ bool PatchMatchStereo::Match(const uint8* img_left, const uint8* img_right,
   img_right_ = img_right;
   //随机初始化
   RandomInitialization();
+  for (sint32 y = 0; y < height_; ++y) {
+    for (sint32 x = 0; x < width_; ++x) {
+      const sint32 p = y * width_ + x;
+      disp_left[p] = disp_left_[p];
+    }
+  }
   return true;
 }
 
