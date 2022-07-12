@@ -13,6 +13,7 @@ void Utils::VisualizeDisparityMap(const float32* disp_map, const sint32& width,
       }
     }
   }
+  std::cout << "max & min disp: " << max_disp << " " << min_disp << std::endl;
   float32 disp_range = max_disp - min_disp;
   for (sint32 i = 0; i < height; ++i) {
     for (sint32 j = 0; j < width; ++j) {

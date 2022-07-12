@@ -31,12 +31,17 @@ bool PatchMatchStereo::Match(const uint8* img_left, const uint8* img_right,
   }
   img_left_ = img_left;
   img_right_ = img_right;
-  //随机初始化
+  // 随机初始化
   RandomInitialization();
+  // 计算灰度图
+  ComputeGray();
+  // 计算梯度图
+  ComputeGradient();
+
   for (sint32 y = 0; y < height_; ++y) {
     for (sint32 x = 0; x < width_; ++x) {
       const sint32 p = y * width_ + x;
-      disp_left[p] = disp_left_[p];
+      disp_left[p] = grad_left_[p].x;
     }
   }
   return true;
@@ -143,4 +148,64 @@ bool PatchMatchStereo::Initialize(const sint32& width, const sint32& height,
                     plane_left_ && plane_right_;
 
   return is_initialized_;
+}
+
+void PatchMatchStereo::ComputeGray() const {
+  const sint32 width = width_;
+  const sint32 height = height_;
+  if (width <= 0 || height <= 0 || img_left_ == nullptr ||
+      img_right_ == nullptr || gray_left_ == nullptr ||
+      gray_right_ == nullptr) {
+    return;
+  }
+  // 彩色转灰度
+  for (sint32 n = 0; n < 2; ++n) {
+    auto* color = (n == 0) ? img_left_ : img_right_;
+    auto* gray = (n == 0) ? gray_left_ : gray_right_;
+    for (sint32 i = 0; i < height; ++i) {
+      for (sint32 j = 0; j < width; ++j) {
+        const auto b = color[i * width * 3 + 3 * j];
+        const auto g = color[i * width * 3 + 3 * j + 1];
+        const auto r = color[i * width * 3 + 3 * j + 2];
+        gray[i * width + j] = uint8((r * 38 + g * 75 + b * 15) >> 7);
+        // gray[i * width + j] = uint8((r * 19595 + g * 38469 + b * 7472) >>
+        // 16);
+      }
+    }
+  }
+}
+
+void PatchMatchStereo::ComputeGradient() const {
+  const sint32 width = width_;
+  const sint32 height = height_;
+  if (width <= 0 || height <= 0 || img_left_ == nullptr ||
+      img_right_ == nullptr || gray_left_ == nullptr ||
+      gray_right_ == nullptr) {
+    return;
+  }
+  // Sobel梯度算子
+  for (sint32 n = 0; n < 2; ++n) {
+    auto* gray = (n == 0) ? gray_left_ : gray_right_;
+    auto* grad = (n == 0) ? grad_left_ : grad_right_;
+    int max_grad = 0, min_grad = 999;
+    for (int y = 0; y < height - 1; ++y) {
+      for (int x = 1; x < width - 1; ++x) {
+        const auto grad_x =
+            (-gray[(y - 1) * width + x - 1] + gray[(y - 1) * width + x + 1]) +
+            (-2 * gray[y * width + x - 1] + 2 * gray[y * width + x + 1]) +
+            (-gray[(y + 1) * width + x - 1] + gray[(y + 1) * width + x + 1]);
+        const auto grad_y =
+            (-gray[(y - 1) * width + x - 1] - 2 * gray[(y - 1) * width + x] -
+             gray[(y - 1) * width + x + 1]) +
+            (gray[(y + 1) * width + x - 1] + 2 * gray[(y + 1) * width + x] -
+             gray[(y + 1) * width + x + 1]);
+        // 这里除以8是为了让梯度的最大值不超过255，这样计算代价时梯度差和颜色差位于同一个尺度
+        grad[y * width + x].x = grad_x / 4;
+        grad[y * width + x].y = grad_y / 4;
+        max_grad = (grad_x > max_grad) ? grad_x : max_grad;
+        min_grad = (grad_x < min_grad) ? grad_x : min_grad;
+      }
+    }
+    std::cout << "max&min grad: " << max_grad << " " << min_grad << std::endl;
+  }
 }

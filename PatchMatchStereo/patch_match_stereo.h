@@ -27,10 +27,10 @@ class PatchMatchStereo {
   void RandomInitialization() const;
   /** @brief 内存释放 */
   void Release();
-
- public:
-  int width;
-  int height;
+  /** @brief 计算灰度图 */
+  void ComputeGray() const;
+  /** @brief 计算梯度图 */
+  void ComputeGradient() const;
 
  private:
   /** \brief PMS参数	 */
