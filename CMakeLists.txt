@@ -20,3 +20,19 @@ add_library( Utils SHARED ${Utils_SRCS} )
 set_target_properties( Utils PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX} )
 target_link_libraries( Main PUBLIC Utils ) 
 target_link_libraries( Main PUBLIC PMS ) 
+
+find_package( Boost 1.54 REQUIRED COMPONENTS unit_test_framework )
+add_executable( pms_test test.cc )
+target_link_libraries( pms_test 
+  PRIVATE 
+    Utils 
+    PMS 
+    ${OpenCV_LIBS} 
+    Boost::unit_test_framework
+  )
+target_compile_definitions(pms_test PRIVATE BOOST_TEST_DYN_LINK)
+enable_testing()
+add_test(
+  NAME boost_test 
+  COMMAND $<TARGET_FILE:pms_test>
+)
