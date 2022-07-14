@@ -87,12 +87,32 @@ class CostComputerPMS : public CostComputer {
   float32 Compute(const sint32& x, const sint32& y,
                   const float32& d) const override;
 
-  PColor GetColor(const uint8* img_data, const sint32& x,
-                  const sint32& y) const;
-  PVector3f GetColor(const uint8* img_data, const float32& x,
-                     const sint32& y) const;
-  PGradient GetGradient(const PGradient* grad_data, const sint32& x,
-                        const sint32& y) const;
+  inline PColor GetColor(const uint8* img_data, const sint32& x,
+                         const sint32& y) const {
+    auto* pixel = img_data + (y * width_ + x) * 3;
+    return {pixel[0], pixel[1], pixel[2]};
+  }
+
+  inline PVector3f GetColor(const uint8* img_data, const float32& x,
+                            const sint32& y) const {
+    float32 clr[3];
+    const auto x1 = static_cast<sint32>(x);
+    const sint32 x2 = (x1 < width_ - 1) ? (x1 + 1) : x1;
+    const float32 ofs = x - x1;
+
+    for (sint32 n = 0; n < 3; ++n) {
+      const auto& g1 = img_data[(y * width_ + x1) * 3 + n];
+      const auto& g2 = img_data[(y * width_ + x2) * 3 + n];
+      clr[n] = (1 - ofs) * g1 + ofs * g2;
+    }
+    return {clr[0], clr[1], clr[2]};
+  }
+
+  inline PGradient GetGradient(const PGradient* grad_data, const sint32& x,
+                               const sint32& y) const {
+    return grad_data[y * width_ + x];
+  }
+
   // 计算左图p点视差平面为p时的聚合代价值
   float32 ComputeA(const sint32& x, const sint32& y,
                    const DisparityPlane& p) const;

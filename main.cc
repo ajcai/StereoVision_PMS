@@ -23,6 +23,7 @@ int main(int argv, char** argc) {
   const sint32 height = static_cast<uint32>(img_right.rows);
   // -------------------------
   PMSOption pms_option;
+  pms_option.patch_size = 7;
   PatchMatchStereo pms;
   if (!pms.Initialize(width, height, pms_option)) {
     std::cout << "初始化失败" << std::endl;
