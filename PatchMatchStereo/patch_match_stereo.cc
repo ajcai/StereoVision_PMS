@@ -37,11 +37,15 @@ bool PatchMatchStereo::Match(const uint8* img_left, const uint8* img_right,
   ComputeGray();
   // 计算梯度图
   ComputeGradient();
+  // 迭代传播
+  Propagation();
+  // 平面转视差
+  PlaneToDisparity();
 
   for (sint32 y = 0; y < height_; ++y) {
     for (sint32 x = 0; x < width_; ++x) {
       const sint32 p = y * width_ + x;
-      disp_left[p] = grad_left_[p].x;
+      disp_left[p] = disp_left_[p];
     }
   }
   return true;
@@ -207,5 +211,61 @@ void PatchMatchStereo::ComputeGradient() const {
       }
     }
     std::cout << "max&min grad: " << max_grad << " " << min_grad << std::endl;
+  }
+}
+
+void PatchMatchStereo::Propagation() const {
+  const sint32 width = width_;
+  const sint32 height = height_;
+  if (width <= 0 || height <= 0 || img_left_ == nullptr ||
+      img_right_ == nullptr || grad_left_ == nullptr ||
+      grad_right_ == nullptr || disp_left_ == nullptr ||
+      disp_right_ == nullptr || plane_left_ == nullptr ||
+      plane_right_ == nullptr || cost_left_ == nullptr ||
+      cost_right_ == nullptr) {
+    return;
+  }
+  // 左右视图匹配参数
+  const auto option_left = option_;
+  auto option_right = option_;
+  option_right.min_disparity = -option_left.max_disparity;
+  option_right.max_disparity = -option_left.min_disparity;
+  // 左右视图传播实例
+  std::cout << "Propagation instance" << std::endl;
+  PMSPropagation propa_right(width, height, img_right_, img_left_, grad_right_,
+                             grad_left_, plane_right_, plane_left_,
+                             option_right, cost_right_, cost_left_,
+                             disp_right_);
+  PMSPropagation propa_left(width, height, img_left_, img_right_, grad_left_,
+                            grad_right_, plane_left_, plane_right_, option_left,
+                            cost_left_, cost_right_, disp_left_);
+
+  for (sint16 k = 0; k < option_.num_iters; ++k) {
+    std::cout << "Propagation " << k << std::endl;
+    propa_left.DoPropagation();
+    propa_right.DoPropagation();
+  }
+}
+
+void PatchMatchStereo::PlaneToDisparity() const {
+  const sint32 width = width_;
+  const sint32 height = height_;
+  if (width <= 0 || height <= 0 || img_left_ == nullptr ||
+      img_right_ == nullptr || grad_left_ == nullptr ||
+      grad_right_ == nullptr || disp_left_ == nullptr ||
+      disp_right_ == nullptr || plane_left_ == nullptr ||
+      plane_right_ == nullptr) {
+    return;
+  }
+  for (sint32 k = 0; k < 2; ++k) {
+    auto* plane_ptr = (k == 0) ? plane_left_ : plane_right_;
+    auto* disp_ptr = (k == 0) ? disp_left_ : disp_right_;
+    for (sint32 y = 0; y < height; ++y) {
+      for (sint32 x = 0; x < width_; ++x) {
+        const sint32 p = y * width + x;
+        const auto& plane = plane_ptr[p];
+        disp_ptr[p] = plane.to_disparity(x, y);
+      }
+    }
   }
 }

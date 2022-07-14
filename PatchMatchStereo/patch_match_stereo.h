@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 
+#include "PatchMatchStereo/pms_propagation.h"
 #include "Utils/pms_types.h"
 
 class PatchMatchStereo {
@@ -31,6 +32,10 @@ class PatchMatchStereo {
   void ComputeGray() const;
   /** @brief 计算梯度图 */
   void ComputeGradient() const;
+  /** @brief 迭代传播 */
+  void Propagation() const;
+  /** @brief 平面转视差 */
+  void PlaneToDisparity() const;
 
  private:
   /** \brief PMS参数	 */

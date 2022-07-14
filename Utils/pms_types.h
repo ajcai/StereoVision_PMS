@@ -69,6 +69,19 @@ struct PMSOption {
 };
 
 /**
+ * \brief 颜色结构体
+ */
+struct PColor {
+  uint8 r, g, b;
+  PColor() : r(0), g(0), b(0) {}
+  PColor(uint8 _b, uint8 _g, uint8 _r) {
+    r = _r;
+    g = _g;
+    b = _b;
+  }
+};
+
+/**
  * \brief 梯度结构体
  */
 struct PGradient {
@@ -155,7 +168,6 @@ typedef PVector3f PPoint3f;
 
 /**
  * \brief 视差平面
- * \ref name "text"
  */
 struct DisparityPlane {
   PVector3f p;
@@ -167,7 +179,7 @@ struct DisparityPlane {
   }
   /**
    * @brief 随机初始化
-   *
+   * 点法式平面方程
    * @param x x像素
    * @param y y像素
    * @param n 法向量

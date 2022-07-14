@@ -22,6 +22,7 @@ target_link_libraries( Main PUBLIC Utils )
 target_link_libraries( Main PUBLIC PMS ) 
 
 find_package( Boost 1.54 REQUIRED COMPONENTS unit_test_framework )
+# add test
 add_executable( pms_test test.cc )
 target_link_libraries( pms_test 
   PRIVATE 
@@ -36,3 +37,4 @@ add_test(
   NAME boost_test 
   COMMAND $<TARGET_FILE:pms_test>
 )
+
