@@ -3,6 +3,7 @@
 
 #include "PatchMatchStereo/pms_propagation.h"
 #include "Utils/pms_types.h"
+#include "Utils/timer.h"
 
 class PatchMatchStereo {
  public:

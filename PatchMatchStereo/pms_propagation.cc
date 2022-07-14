@@ -31,9 +31,12 @@ PMSPropagation::PMSPropagation(const sint32 width, const sint32 height,
       option.patch_size, -option.max_disparity, -option.min_disparity,
       option.gamma, option.alpha, option.tau_col, option.tau_grad);
   option_ = option;
+  Utils::Timer timer;
   std::cout << "init cost" << std::endl;
+  timer.Start();
   ComputeCostData();
-  std::cout << "init cost done" << std::endl;
+  timer.End();
+  std::cout << "Init Cost spent " << timer.Get() << "s" << std::endl;
 }
 
 PMSPropagation::~PMSPropagation() {

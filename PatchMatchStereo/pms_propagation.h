@@ -2,6 +2,7 @@
 #include <iostream>
 #include "PatchMatchStereo/cost_computer.h"
 #include "Utils/pms_types.h"
+#include "Utils/timer.h"
 
 class PMSPropagation final {
  public:

@@ -28,6 +28,7 @@ float32 CostComputerPMS::ComputeA(const sint32& x, const sint32& y,
   const auto pat = patch_size_ / 2;
   const auto& clr_p = GetColor(img_left_, x, y);
   float32 cost = 0.0f;
+#pragma omp parallel for
   for (sint32 pr = -pat; pr <= pat; ++pr) {
     sint32 y_p = y + pr;
     for (sint32 pc = -pat; pc <= pat; ++pc) {

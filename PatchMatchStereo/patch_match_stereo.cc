@@ -239,11 +239,14 @@ void PatchMatchStereo::Propagation() const {
   PMSPropagation propa_left(width, height, img_left_, img_right_, grad_left_,
                             grad_right_, plane_left_, plane_right_, option_left,
                             cost_left_, cost_right_, disp_left_);
-
+  Utils::Timer timer;
   for (sint16 k = 0; k < option_.num_iters; ++k) {
     std::cout << "Propagation " << k << std::endl;
+    timer.Start();
     propa_left.DoPropagation();
     propa_right.DoPropagation();
+    timer.End();
+    std::cout << "Propagation spent " << timer.Get() << "s" << std::endl;
   }
 }
 

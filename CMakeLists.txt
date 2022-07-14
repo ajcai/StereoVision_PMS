@@ -21,6 +21,11 @@ set_target_properties( Utils PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX} )
 target_link_libraries( Main PUBLIC Utils ) 
 target_link_libraries( Main PUBLIC PMS ) 
 
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(PMS PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
 find_package( Boost 1.54 REQUIRED COMPONENTS unit_test_framework )
 # add test
 add_executable( pms_test test.cc )
